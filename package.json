@@ -9,11 +9,11 @@
     "build": "pnpm --filter './packages/{db,shared}' build && pnpm --filter './packages/{server,web}' build",
     "lint": "pnpm --filter '*' lint",
     "typecheck": "pnpm --filter '*' exec tsc --noEmit",
-    "db:generate": "pnpm --filter server drizzle-kit generate",
-    "db:migrate": "pnpm --filter server drizzle-kit migrate",
-    "db:push": "pnpm --filter server drizzle-kit push",
-    "db:studio": "pnpm --filter server drizzle-kit studio",
-    "seed": "pnpm --filter server seed"
+    "db:generate": "pnpm --filter server run db:generate",
+    "db:migrate": "pnpm --filter server run db:migrate",
+    "db:push": "pnpm --filter server run db:push",
+    "db:studio": "pnpm --filter server run db:studio",
+    "seed": "pnpm --filter server run seed"
   },
   "devDependencies": {
     "typescript": "catalog:",
