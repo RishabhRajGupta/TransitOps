@@ -1,237 +1,224 @@
-/* 5-column Gauge Grid */
-.grid-5 {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 16px;
+/* Dashboard Dark Theme */
+.dashboard-dark-page {
+  background-color: #121212;
+  color: #ffffff;
+  min-height: 100vh;
+  padding: 24px;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-.gauge-grid {
+/* Filters Row */
+.dashboard-filters {
+  display: flex;
+  gap: 16px;
   margin-bottom: 24px;
 }
 
-.gauge-card {
+.filter-group {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px 16px;
-}
-
-.gauge-svg-container {
   position: relative;
-  width: 90px;
-  height: 90px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-.gauge-svg {
+.filter-group label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #a1a1aa;
   position: absolute;
-  top: 0;
-  left: 0;
+  top: -8px;
+  left: 12px;
+  background-color: #121212;
+  padding: 0 4px;
+  z-index: 1;
 }
 
-.gauge-track {
-  fill: none;
-  stroke: #f1f5f9;
+.filter-select {
+  background-color: transparent;
+  border: 1px solid #333333;
+  color: #d4d4d8;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  min-width: 160px;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
 }
 
-.gauge-fill {
-  fill: none;
-  transition: stroke-dashoffset 0.8s ease-in-out;
+.filter-select:focus {
+  outline: none;
+  border-color: #52525b;
 }
 
-/* Gauge color styles mapping */
-.gauge-fill.orange { stroke: var(--primary); }
-.gauge-fill.green { stroke: var(--success); }
-.gauge-fill.red { stroke: var(--danger); }
-.gauge-fill.blue { stroke: var(--info); }
-.gauge-fill.amber { stroke: var(--warning); }
-
-.gauge-value {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--text-main);
-  z-index: 2;
-}
-
-.gauge-info {
-  margin-top: 12px;
-  text-align: center;
-}
-
-.gauge-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  line-height: 1.3;
-}
-
-/* Date badge styling */
-.dashboard-date-badge {
+/* KPI Grid */
+.dashboard-kpi-grid {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  background-color: #ffffff;
-  border: 1px solid var(--border-color);
-  padding: 8px 14px;
-  border-radius: var(--radius-md);
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  box-shadow: var(--shadow-sm);
+  gap: 16px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
 }
 
-/* Layout split */
-.dashboard-layout-main {
+.kpi-card {
+  flex: 1;
+  min-width: 140px;
+  background-color: #1a1a1a;
+  border: 1px solid #27272a;
+  border-radius: 6px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-left-width: 4px;
+}
+
+.kpi-card.border-blue { border-left-color: #3b82f6; }
+.kpi-card.border-green { border-left-color: #10b981; }
+.kpi-card.border-orange { border-left-color: #f59e0b; }
+
+.kpi-label {
+  font-size: 11px;
+  color: #a1a1aa;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.kpi-value {
+  font-size: 28px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+/* Main Layout */
+.dashboard-main-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  gap: 24px;
-  align-items: start;
+  gap: 32px;
 }
 
-.section-header {
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.section-header h2 {
-  font-size: 16px;
-  font-weight: 700;
-}
-
-.timestamp-cell {
-  font-family: ui-monospace, monospace;
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-.event-cell strong {
+/* Section Titles */
+.section-title {
+  font-size: 14px;
+  color: #a1a1aa;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   font-weight: 600;
-  color: var(--text-main);
+  margin-bottom: 16px;
 }
 
-/* Side Diagnostics Widget styling */
-.dashboard-side-diagnostics {
-  display: flex;
-  flex-direction: column;
+/* Table Styles */
+.dashboard-table-container {
+  overflow-x: auto;
 }
 
-.diagnostics-header {
-  margin-bottom: 24px;
+.dashboard-table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.diagnostics-header h3 {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text-main);
+.dashboard-table th,
+.dashboard-table td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid #27272a;
 }
 
-.diagnostics-sub {
+.dashboard-table th {
   font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 4px;
-  display: block;
-  line-height: 1.4;
+  color: #71717a;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.diagnostics-metrics-list {
+.dashboard-table td {
+  font-size: 14px;
+  color: #d4d4d8;
+}
+
+.trip-code {
+  font-family: ui-monospace, monospace;
+  color: #ffffff;
+}
+
+/* Status Pills */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-pill.dispatched {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.status-pill.completed {
+  background-color: #10b981;
+  color: #ffffff;
+}
+
+.status-pill.draft {
+  background-color: #3f3f46;
+  color: #ffffff;
+}
+
+.status-pill.cancelled {
+  background-color: #ef4444;
+  color: #ffffff;
+}
+
+/* Vehicle Status Bars */
+.vehicle-status-list {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.progress-metric-item {
+.v-status-item {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  gap: 16px;
 }
 
-.metric-label-row {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-secondary);
+.v-status-label {
+  width: 80px;
+  font-size: 13px;
+  color: #d4d4d8;
 }
 
-.metric-val {
-  font-weight: 700;
-  color: var(--text-main);
-}
-
-.progress-bar-track {
-  width: 100%;
-  height: 6px;
-  background-color: #f1f5f9;
-  border-radius: 9999px;
+.v-status-bar-container {
+  flex: 1;
+  height: 12px;
+  background-color: #27272a;
+  border-radius: 2px;
   overflow: hidden;
 }
 
-.progress-bar-fill {
+.v-status-bar-fill {
   height: 100%;
-  border-radius: 9999px;
-  transition: width 0.8s ease-in-out;
 }
 
-.progress-bar-fill.green { background-color: var(--success); }
-.progress-bar-fill.orange { background-color: var(--primary); }
-.progress-bar-fill.red { background-color: var(--danger); }
+.v-status-bar-fill.available { background-color: #10b981; }
+.v-status-bar-fill.on-trip { background-color: #3b82f6; }
+.v-status-bar-fill.in-shop { background-color: #f59e0b; }
+.v-status-bar-fill.retired { background-color: #ef4444; }
 
-.diagnostics-summary-card {
-  display: flex;
-  gap: 14px;
-  background-color: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  border-radius: var(--radius-md);
-  padding: 16px;
-  margin-top: 28px;
-}
-
-.summary-icon-wrapper {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background-color: #d1fae5;
-  color: #16a34a;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.summary-desc-wrapper strong {
-  display: block;
-  font-size: 13px;
-  color: #14532d;
-}
-
-.summary-desc-wrapper p {
-  font-size: 12px;
-  color: #15803d;
-  margin-top: 3px;
-}
-
-/* Responsive grids */
-@media (max-width: 1200px) {
-  .grid-5 {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
+/* Responsive */
 @media (max-width: 1024px) {
-  .dashboard-layout-main {
+  .dashboard-main-grid {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 768px) {
-  .grid-5 {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 480px) {
-  .grid-5 {
-    grid-template-columns: 1fr;
+  .dashboard-filters {
+    flex-wrap: wrap;
   }
 }
