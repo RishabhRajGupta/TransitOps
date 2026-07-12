@@ -358,50 +358,30 @@ export default function LoginPage() {
           {!mfaStep ? (
             <div className="login-form-container">
               <div className="login-header">
-                <h2>Operational Portal</h2>
-                <p>Provide registry email and authentication role to access dashboard.</p>
+                <h2>Sign in to your account</h2>
+                <p>Enter your credentials to continue</p>
               </div>
 
               {error && <div className="login-error-alert">{error}</div>}
 
               <form onSubmit={handleLoginSubmit} className="login-form">
                 <div className="login-field-group">
-                  <label htmlFor="role-select">Console Security Persona</label>
+                  <label htmlFor="email">Email</label>
                   <div className="login-input-wrapper">
-                    <Users className="login-input-icon" size={18} style={{ left: 14, zIndex: 5 }} />
-                    <select
-                      id="role-select"
-                      value={role}
-                      onChange={(e) => handleRoleChange(e.target.value)}
-                      style={{ paddingLeft: 44 }}
-                    >
-                      <option value="Fleet Manager">Fleet Manager (Assets & Lifecycle)</option>
-                      <option value="Driver">Driver / Operator (Trips & Dispatch)</option>
-                      <option value="Safety Officer">Safety Officer (License Validity & Compliance)</option>
-                      <option value="Financial Analyst">Financial Analyst (Expenses & ROI)</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="login-field-group">
-                  <label htmlFor="email">Operator Email Address</label>
-                  <div className="login-input-wrapper">
-                    <Mail className="login-input-icon" size={18} />
                     <input
                       id="email"
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="e.g. manager@transitops.com"
+                      placeholder="e.g. manager@transitops.in"
                       required
                     />
                   </div>
                 </div>
 
                 <div className="login-field-group">
-                  <label htmlFor="password">Security Password</label>
+                  <label htmlFor="password">Password</label>
                   <div className="login-input-wrapper">
-                    <Lock className="login-input-icon" size={18} />
                     <input
                       id="password"
                       type="password"
@@ -413,19 +393,44 @@ export default function LoginPage() {
                   </div>
                 </div>
 
+                <div className="login-field-group">
+                  <label htmlFor="role-select">Role (RBAC)</label>
+                  <div className="login-input-wrapper">
+                    <select
+                      id="role-select"
+                      value={role}
+                      onChange={(e) => handleRoleChange(e.target.value)}
+                    >
+                      <option value="Fleet Manager">Fleet Manager</option>
+                      <option value="Driver">Dispatcher</option>
+                      <option value="Safety Officer">Safety Officer</option>
+                      <option value="Financial Analyst">Financial Analyst</option>
+                    </select>
+                  </div>
+                </div>
+
                 <div className="login-form-options">
                   <label className="login-checkbox-label">
                     <input type="checkbox" defaultChecked />
-                    <span>Trust workstation for 24 hours</span>
+                    <span>Remember me</span>
                   </label>
-                  <a href="#reset" className="login-forgot-link">Help?</a>
+                  <a href="#reset" className="login-forgot-link">Forgot password?</a>
                 </div>
 
                 <button type="submit" className="btn btn-primary login-submit-btn" disabled={loading}>
-                  {loading ? "Validating credentials..." : "Enter Operator Session"}
-                  {!loading && <ArrowRight size={18} />}
+                  {loading ? "Signing in..." : "Sign In"}
                 </button>
               </form>
+
+              <div className="login-role-info">
+                <h4>Access is scoped by role after login:</h4>
+                <ul>
+                  <li>Fleet Manager &rarr; Fleet, Maintenance</li>
+                  <li>Dispatcher &rarr; Dashboard, Trips</li>
+                  <li>Safety Officer &rarr; Drivers, Compliance</li>
+                  <li>Financial Analyst &rarr; Fuel & Expenses, Analytics</li>
+                </ul>
+              </div>
             </div>
           ) : (
             <div className="login-form-container mfa-step-container">
