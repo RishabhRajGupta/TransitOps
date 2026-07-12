@@ -6,10 +6,11 @@ export const driverSelectSchema = createSelectSchema(drivers);
 
 export const createDriverSchema = createInsertSchema(drivers, {
   licenseExpiryDate: z.string().date(),
-  safetyScore: z.number().min(0).max(100).optional(),
+  safetyScore: z.coerce.number().min(0).max(100).optional(),
+  status: z.enum(["available", "on_trip", "off_duty", "suspended"]).optional(),
 }).omit({
   id: true,
-  status: true,
+  userId: true,
   createdAt: true,
   updatedAt: true,
 });

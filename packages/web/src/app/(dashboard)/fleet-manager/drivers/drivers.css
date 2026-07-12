@@ -1,0 +1,119 @@
+.profile-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-shield-icon {
+  color: var(--primary);
+  opacity: 0.85;
+}
+
+.members-badge {
+  background-color: #f1f5f9;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.policy-code {
+  font-size: 12px;
+  font-weight: 600;
+  background-color: #fff8e6;
+  border: 1px solid #ffe8b3;
+  color: #b45309;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+}
+
+/* Custom interactive toggle button styling */
+.status-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background-color: #f1f5f9;
+  color: var(--text-secondary);
+}
+
+.status-toggle-btn .toggle-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transition: transform var(--transition-fast);
+  background-color: var(--text-muted);
+}
+
+.status-toggle-btn.active {
+  background-color: var(--success-light);
+  color: #047857;
+  border-color: #a7f3d0;
+}
+
+.status-toggle-btn.active .toggle-dot {
+  background-color: var(--success);
+  box-shadow: 0 0 6px var(--success);
+}
+
+.status-toggle-btn.inactive {
+  background-color: var(--danger-light);
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+.status-toggle-btn.inactive .toggle-dot {
+  background-color: var(--danger);
+  box-shadow: 0 0 6px var(--danger);
+}
+
+.date-cell {
+  font-family: ui-monospace, monospace;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Run Policy Action Button styling */
+.action-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  background-color: var(--primary-light);
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.action-pill-btn:hover {
+  background-color: var(--primary);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(234, 88, 12, 0.15);
+}
+
+.action-pill-btn:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 1024px) {
+  .date-cell {
+    display: none;
+  }
+}
