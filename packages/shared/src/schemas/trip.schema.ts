@@ -5,15 +5,17 @@ import { trips } from "@transitops/db/schema";
 export const tripSelectSchema = createSelectSchema(trips);
 
 export const createTripSchema = createInsertSchema(trips, {
-  cargoWeightKg: z.string().transform((v) => Number(v)).pipe(z.number().positive()),
-  plannedDistanceKm: z.string().transform((v) => Number(v)).pipe(z.number().positive()),
+  cargoWeightKg: z.coerce.number().positive(),
+  plannedDistanceKm: z.coerce.number().positive(),
 }).omit({
   id: true,
+  tripCode: true,
   status: true,
   startOdometerKm: true,
   endOdometerKm: true,
   fuelConsumedLiters: true,
   revenue: true,
+  createdBy: true,
   dispatchedAt: true,
   completedAt: true,
   cancelledAt: true,

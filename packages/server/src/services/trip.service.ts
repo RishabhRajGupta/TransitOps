@@ -1,87 +1,133 @@
-import { eq, and } from "drizzle-orm";
+import { eq, and, desc, sql } from "drizzle-orm";
 import { db } from "../lib/db";
 import { trips, vehicles, drivers } from "@transitops/db/schema";
+import { CreateTripInput } from "@transitops/shared/schemas/trip.schema";
 import { AppError } from "../lib/errors";
 
-function todayISODate(): string {
-  return new Date().toISOString().split("T")[0];
+export async function listTrips(filters?: { status?: string }) {
+  const conditions = [];
+
+  if (filters?.status && filters.status !== "All") {
+    const statusMap: Record<string, string> = {
+      "Draft": "draft",
+      "Dispatched": "dispatched",
+      "Completed": "completed",
+      "Cancelled": "cancelled"
+    };
+    const mappedStatus = statusMap[filters.status];
+    if (mappedStatus) {
+      conditions.push(eq(trips.status, mappedStatus as any));
+    }
+  }
+
+  // We want to fetch the related vehicle and driver info
+  const result = await db
+    .select({
+      id: trips.id,
+      tripCode: trips.tripCode,
+      source: trips.source,
+      destination: trips.destination,
+      vehicleId: trips.vehicleId,
+      driverId: trips.driverId,
+      cargoWeightKg: trips.cargoWeightKg,
+      plannedDistanceKm: trips.plannedDistanceKm,
+      status: trips.status,
+      dispatchedAt: trips.dispatchedAt,
+      completedAt: trips.completedAt,
+      cancelledAt: trips.cancelledAt,
+      createdAt: trips.createdAt,
+      vehicleName: vehicles.name,
+      vehicleRegistration: vehicles.registrationNumber,
+      driverName: drivers.name,
+    })
+    .from(trips)
+    .innerJoin(vehicles, eq(trips.vehicleId, vehicles.id))
+    .innerJoin(drivers, eq(trips.driverId, drivers.id))
+    .where(conditions.length > 0 ? and(...conditions) : undefined)
+    .orderBy(desc(trips.createdAt));
+
+  return result;
 }
 
-export async function dispatchTrip(tripId: string) {
-  return db.transaction(async (tx) => {
-    // 1. Atomically claim the TRIP نفسه — guards against double-dispatch of the same trip
-    const [trip] = await tx
-      .update(trips)
-      .set({ status: "dispatched", dispatchedAt: new Date(), updatedAt: new Date() })
-      .where(and(eq(trips.id, tripId), eq(trips.status, "draft")))
-      .returning();
-
-    if (!trip) {
-      const existing = await tx.query.trips.findFirst({ where: eq(trips.id, tripId) });
-      if (!existing) throw new AppError("NOT_FOUND", "Trip not found", 404);
-      throw new AppError("BUSINESS_RULE_VIOLATION", `Trip is already ${existing.status}`, 409);
-    }
-
-    // 2. Compliance checks
-    const driver = await tx.query.drivers.findFirst({ where: eq(drivers.id, trip.driverId) });
-    if (!driver) throw new AppError("NOT_FOUND", "Driver not found", 404);
-    if (driver.status === "suspended")
-      throw new AppError("BUSINESS_RULE_VIOLATION", "Driver is suspended", 409);
-    if (driver.licenseExpiryDate < todayISODate())
-      throw new AppError("BUSINESS_RULE_VIOLATION", "Driver license has expired", 409);
-
-    // 3. Atomically CLAIM the vehicle — this is the real race guard. If another
-    //    request dispatched it a millisecond ago, status is no longer 'available'
-    //    and this UPDATE matches zero rows.
-    const [claimedVehicle] = await tx
-      .update(vehicles)
-      .set({ status: "on_trip", updatedAt: new Date() })
-      .where(and(eq(vehicles.id, trip.vehicleId), eq(vehicles.status, "available")))
-      .returning();
-    if (!claimedVehicle)
-      throw new AppError("CONFLICT", "Vehicle is no longer available", 409); // tx rolls back
-
-    // 4. Same atomic claim for the driver
-    const [claimedDriver] = await tx
-      .update(drivers)
-      .set({ status: "on_trip", updatedAt: new Date() })
-      .where(and(eq(drivers.id, trip.driverId), eq(drivers.status, "available")))
-      .returning();
-    if (!claimedDriver)
-      throw new AppError("CONFLICT", "Driver is no longer available", 409);
-
-    return trip;
+export async function createTrip(input: CreateTripInput, userId: string) {
+  // Verify vehicle and driver are actually available
+  const vehicle = await db.query.vehicles.findFirst({
+    where: eq(vehicles.id, input.vehicleId)
   });
+  if (!vehicle || vehicle.status !== "available") {
+    throw new AppError("UNAVAILABLE", "Selected vehicle is not available", 400);
+  }
+
+  const driver = await db.query.drivers.findFirst({
+    where: eq(drivers.id, input.driverId)
+  });
+  if (!driver || driver.status !== "available") {
+    throw new AppError("UNAVAILABLE", "Selected driver is not available", 400);
+  }
+
+  const tripCode = `TRP-${Math.random().toString().slice(2, 8)}`;
+
+  const [trip] = await db
+    .insert(trips)
+    .values({
+      tripCode,
+      source: input.source,
+      destination: input.destination,
+      vehicleId: input.vehicleId,
+      driverId: input.driverId,
+      cargoWeightKg: input.cargoWeightKg.toString(),
+      plannedDistanceKm: input.plannedDistanceKm.toString(),
+      status: "draft",
+      createdBy: userId,
+    })
+    .returning();
+
+  return trip;
 }
 
-export async function createTrip(input: any, createdById: string) {
-  return db.transaction(async (tx) => {
-    // Cargo weight checks
-    const vehicle = await tx.query.vehicles.findFirst({ where: eq(vehicles.id, input.vehicleId) });
-    if (!vehicle) throw new AppError("NOT_FOUND", "Vehicle not found", 404);
-    if (Number(input.cargoWeightKg) > Number(vehicle.maxLoadCapacityKg)) {
-      throw new AppError(
-        "BUSINESS_RULE_VIOLATION",
-        `Cargo weight ${input.cargoWeightKg}kg exceeds vehicle capacity ${vehicle.maxLoadCapacityKg}kg`,
-        422
-      );
+export async function updateTripStatus(id: string, status: "dispatched" | "completed" | "cancelled") {
+  return await db.transaction(async (tx) => {
+    // 1. Get the trip
+    const [existingTrip] = await tx
+      .select()
+      .from(trips)
+      .where(eq(trips.id, id));
+
+    if (!existingTrip) {
+      throw new AppError("NOT_FOUND", "Trip not found", 404);
     }
 
-    // Check unique tripCode
-    const existingCode = await tx.query.trips.findFirst({ where: eq(trips.tripCode, input.tripCode) });
-    if (existingCode) {
-      throw new AppError("CONFLICT", "Trip code already exists", 409);
+    // 2. Prepare update payload
+    const updatePayload: any = {
+      status,
+      updatedAt: new Date(),
+    };
+
+    if (status === "dispatched") {
+      updatePayload.dispatchedAt = new Date();
+    } else if (status === "completed") {
+      updatePayload.completedAt = new Date();
+    } else if (status === "cancelled") {
+      updatePayload.cancelledAt = new Date();
     }
 
-    const [newTrip] = await tx
-      .insert(trips)
-      .values({
-        ...input,
-        status: "draft",
-        createdBy: createdById,
-      })
+    // 3. Update the trip
+    const [updatedTrip] = await tx
+      .update(trips)
+      .set(updatePayload)
+      .where(eq(trips.id, id))
       .returning();
 
-    return newTrip;
+    // 4. Sync Vehicle and Driver statuses
+    let newAssetStatus: "available" | "on_trip" = "available";
+    if (status === "dispatched") {
+      newAssetStatus = "on_trip";
+    } // completed or cancelled -> reverts to available
+
+    // Only sync if changing TO dispatched, OR FROM dispatched to completed/cancelled
+    await tx.update(vehicles).set({ status: newAssetStatus }).where(eq(vehicles.id, existingTrip.vehicleId));
+    await tx.update(drivers).set({ status: newAssetStatus }).where(eq(drivers.id, existingTrip.driverId));
+
+    return updatedTrip;
   });
 }
