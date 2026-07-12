@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
-import { db } from "../../../../lib/db";
+import { db } from "../../../../../lib/db";
 import { users } from "@transitops/db/schema";
 import { loginSchema } from "@transitops/shared/schemas/auth.schema";
-import { withApiHandler } from "../../../../middleware/api-handler";
-import { validateBody } from "../../../../middleware/validation";
-import { createAccessToken, createRefreshToken } from "../../../../middleware/auth";
-import { AppError } from "../../../../lib/errors";
+import { withApiHandler } from "../../../../../middleware/api-handler";
+import { validateBody } from "../../../../../middleware/validation";
+import { createAccessToken, createRefreshToken } from "../../../../../middleware/auth";
+import { AppError } from "../../../../../lib/errors";
 
 export const POST = withApiHandler(async (req: NextRequest) => {
   const body = await validateBody(req, loginSchema);

@@ -1,5 +1,6 @@
 import "./globals.css";
 import React from "react";
+import { AuthProvider } from "../components/providers/auth-provider";
 
 export const metadata = {
   title: "TransitOps",
@@ -14,7 +15,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <main>{children}</main>
+        <AuthProvider>
+          <main>{children}</main>
+        </AuthProvider>
       </body>
     </html>
   );

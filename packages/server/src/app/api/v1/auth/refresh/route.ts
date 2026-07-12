@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
-import { db } from "../../../../lib/db";
+import { db } from "../../../../../lib/db";
 import { users } from "@transitops/db/schema";
-import { withApiHandler } from "../../../../middleware/api-handler";
-import { verifyRefreshToken, createAccessToken } from "../../../../middleware/auth";
-import { AppError } from "../../../../lib/errors";
+import { withApiHandler } from "../../../../../middleware/api-handler";
+import { verifyRefreshToken, createAccessToken } from "../../../../../middleware/auth";
+import { AppError } from "../../../../../lib/errors";
 
 export const POST = withApiHandler(async (req: NextRequest) => {
   const cookieToken = req.cookies.get("refreshToken")?.value;
