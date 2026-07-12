@@ -1,0 +1,9 @@
+node_modules/
+.next/
+dist/
+.env
+.env.local
+.env.values.dev
+.env.values.prod
+*.tsbuildinfo
+pgdata/

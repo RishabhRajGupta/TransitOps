@@ -143,7 +143,7 @@ export const expenses = pgTable("expenses", {
 
 ---
 
-## Auth Module (`apps/server/src/lib/auth.ts`)
+## Auth Module (`packages/server/src/middleware/auth.ts`)
 
 ```ts
 import { SignJWT, jwtVerify } from "jose";
@@ -161,7 +161,7 @@ export async function createRefreshToken(payload: { id: string; email: string })
 // Distinguish expired (498) from invalid (401) for axios-auth-refresh interceptor.
 ```
 
-### RBAC (`apps/server/src/lib/rbac.ts`)
+### RBAC (`packages/server/src/middleware/rbac.ts`)
 
 ```ts
 export function requireRole(user: AuthUser, allowed: UserRole[]) {
@@ -173,7 +173,7 @@ export function requireRole(user: AuthUser, allowed: UserRole[]) {
 
 ---
 
-## Error Handling (`apps/server/src/lib/errors.ts`)
+## Error Handling (`packages/server/src/lib/errors.ts`)
 
 ```ts
 export class AppError extends Error {
@@ -207,7 +207,7 @@ Every route handler is wrapped by `withApiHandler()` — auth extraction + try/c
 
 ---
 
-## Dispatch Service (`apps/server/src/modules/trips/trip.service.ts`)
+## Dispatch Service (`packages/server/src/services/trip.service.ts`)
 
 The concurrency-correct dispatch — the most critical function in the system:
 
@@ -299,16 +299,16 @@ Follow this pattern for all entities. `drizzle-zod ≥0.8.3` required for Zod 4.
 
 ---
 
-## OpenAPI Setup (`apps/server/src/lib/openapi.ts`)
+## OpenAPI Setup (`packages/server/src/docs/openapi.ts`)
 
 ```ts
 import swaggerJsdoc from "swagger-jsdoc";
-import { zodToJsonSchema } from "zod-to-json-schema";
 import { vehicleSelectSchema, createVehicleSchema } from "@transitops/shared/schemas/vehicle.schema";
 
+// Generate OpenAPI schemas using Zod's native features or standard utilities
 const generatedSchemas = {
-  Vehicle: zodToJsonSchema(vehicleSelectSchema),
-  CreateVehicleInput: zodToJsonSchema(createVehicleSchema),
+  Vehicle: vehicleSelectSchema, // natively generated or parsed schema
+  CreateVehicleInput: createVehicleSchema,
   // ...one line per schema
 };
 
@@ -325,17 +325,17 @@ export const openApiSpec = swaggerJsdoc({
 Route handler JSDoc describes paths only — schemas are generated, not hand-typed.
 
 ```ts
-// apps/server/src/app/api/openapi.json/route.ts
+// packages/server/src/app/api/openapi.json/route.ts
 export async function GET() { return NextResponse.json(openApiSpec); }
 
-// apps/server/src/app/docs/route.ts
+// packages/server/src/app/docs/route.ts
 import { ApiReference } from "@scalar/nextjs-api-reference";
 export const GET = ApiReference({ url: "/api/openapi.json" });
 ```
 
 ---
 
-## Logging (`apps/server/src/lib/logger.ts`)
+## Logging (`packages/server/src/lib/logger.ts`)
 
 ```ts
 import winston from "winston";
@@ -355,14 +355,14 @@ Log: every request (method, path, status, duration, userId, requestId), business
 
 ---
 
-## Drizzle Config (`apps/server/drizzle.config.ts`)
+## Drizzle Config (`packages/server/drizzle.config.ts`)
 
 ```ts
 import "dotenv/config";
 import { defineConfig } from "drizzle-kit";
 
 export default defineConfig({
-  schema: "../../packages/db/src/schema.ts",
+  schema: "../db/src/schema.ts",
   out: "./src/db/migrations",
   dialect: "postgresql",
   dbCredentials: { url: process.env.DATABASE_URL! },
@@ -376,7 +376,7 @@ export default defineConfig({
 ```yaml
 services:
   postgres:
-    image: postgres:16-alpine
+    image: postgres:17-alpine
     environment:
       POSTGRES_USER: transitops
       POSTGRES_PASSWORD: transitops
@@ -394,7 +394,7 @@ volumes:
 
 ---
 
-## Server Dockerfile (`apps/server/Dockerfile`)
+## Server Dockerfile (`packages/server/Dockerfile`)
 
 ```dockerfile
 FROM node:22-alpine AS base
@@ -409,10 +409,10 @@ RUN pnpm --filter server build
 FROM base AS runner
 WORKDIR /app
 ENV NODE_ENV=production
-COPY --from=build /repo/apps/server/.next/standalone ./
-COPY --from=build /repo/apps/server/.next/static ./apps/server/.next/static
+COPY --from=build /repo/packages/server/.next/standalone ./
+COPY --from=build /repo/packages/server/.next/static ./packages/server/.next/static
 EXPOSE 4000
-CMD ["node", "apps/server/server.js"]
+CMD ["node", "packages/server/server.js"]
 ```
 
 Run `drizzle-kit migrate` as a CI release step, not inside container CMD.

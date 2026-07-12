@@ -1,0 +1,24 @@
+{
+  "name": "transitops",
+  "private": true,
+  "packageManager": "pnpm@11.11.0",
+  "scripts": {
+    "dev:server": "pnpm --filter server dev",
+    "dev:web": "pnpm --filter web dev",
+    "dev": "pnpm --filter './packages/{server,web}' --parallel dev",
+    "build": "pnpm --filter './packages/{db,shared}' build && pnpm --filter './packages/{server,web}' build",
+    "lint": "pnpm --filter '*' lint",
+    "typecheck": "pnpm --filter '*' exec tsc --noEmit",
+    "db:generate": "pnpm --filter server drizzle-kit generate",
+    "db:migrate": "pnpm --filter server drizzle-kit migrate",
+    "db:push": "pnpm --filter server drizzle-kit push",
+    "db:studio": "pnpm --filter server drizzle-kit studio",
+    "seed": "pnpm --filter server seed"
+  },
+  "devDependencies": {
+    "typescript": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:"
+  }
+}

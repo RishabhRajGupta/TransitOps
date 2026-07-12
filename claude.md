@@ -16,13 +16,13 @@
 
 | Layer | Choice |
 |---|---|
-| Monorepo | pnpm v10 workspaces, `catalog:` for shared versions |
-| Frontend | Next.js 15.5.4 (App Router), Tailwind v4, shadcn/ui, TanStack Query v5, zustand, react-hook-form + zodResolver |
-| Backend | Next.js 15.5.4 Route Handlers only (separate `apps/server`) |
-| DB | PostgreSQL 16 + Drizzle ORM, schema in `packages/db` |
+| Monorepo | pnpm v11 workspaces, `catalog:` for shared versions |
+| Frontend | Next.js 16.2.10 (App Router), Tailwind v4, shadcn/ui, TanStack Query v5, zustand, react-hook-form + zodResolver |
+| Backend | Next.js 16.2.10 Route Handlers only (separate `packages/server`) |
+| DB | PostgreSQL 17 + Drizzle ORM, schema in `packages/db` |
 | Validation | Zod v4 + drizzle-zod (schemas derived from DB, never hand-written) |
 | Auth | Dual JWT via `jose` — access 5min (body) + refresh 7d (httpOnly cookie) |
-| API Docs | swagger-jsdoc + Scalar + zod-to-json-schema |
+| API Docs | swagger-jsdoc + Scalar |
 | Testing | Vitest + NTARH (not supertest — Route Handlers don't expose `http.Server`) |
 | Deploy | Docker multi-stage (standalone) → AWS App Runner + RDS |
 
@@ -32,14 +32,14 @@
 
 ```
 transitops/
-├── apps/server/        # API only — route handlers, modules/, lib/
-├── apps/web/           # UI only — pages, hooks, components
+├── packages/server/    # API only — route handlers, services/, middleware/
+├── packages/web/       # UI only — pages, hooks, components
 ├── packages/db/        # Drizzle schema + constants ONLY (no env, no connection)
 ├── packages/shared/    # Derived Zod schemas, types (z.infer), API client
-└── docker-compose.yml  # Local Postgres
+└── docker-compose.yml  # Local Postgres 17
 ```
 
-**Never violate:** `packages/db` → `packages/shared` → `apps/web`. Only `apps/server` opens DB connections. `apps/web` never imports `packages/db`.
+**Never violate:** `packages/db` → `packages/shared` → `packages/web`. Only `packages/server` opens DB connections. `packages/web` never imports `packages/db`.
 
 > 📖 [SDD §5 — Full structure + dependency graph](./TransitOps_SDD.md#L107-L205) · [pnpm workspace config](./claude-reference.md#L422-L437) · [Docker Compose](./claude-reference.md#L374-L395) · [Dockerfile](./claude-reference.md#L397-L419)
 
@@ -118,7 +118,7 @@ RBAC is **server-only** via `requireRole()`. UI hides buttons for UX, not securi
 2. **Service layer** → `409`/`422` (cross-row business rules needing DB reads)
 3. **DB constraints** → caught and mapped to `409` (never raw Postgres errors)
 
-Schema chain: `packages/db` pgTable → `drizzle-zod` → Zod schemas in `packages/shared` → `z.infer` types → `zod-to-json-schema` for OpenAPI.
+Schema chain: `packages/db` pgTable → `drizzle-zod` → Zod schemas in `packages/shared` → `z.infer` types → Zod's native schema generation for OpenAPI.
 
 > 📖 [Schema derivation code](./claude-reference.md#L276-L299) · [Error handling (AppError + toErrorResponse)](./claude-reference.md#L176-L207) · [SDD §9 — Full validation pipeline](./TransitOps_SDD.md#L499-L563)
 
@@ -171,7 +171,7 @@ Production: Docker multi-stage → AWS App Runner + RDS
 
 ## Gotchas
 
-1. `drizzle-zod` needs `≥0.8.3` for Zod 4
+1. `drizzle-zod` needs `≥0.6.0` for Zod 4
 2. Scalar + Tailwind v4: add `@layer` declaration before `@import "tailwindcss"`
 3. Draft trips don't lock resources — conflict surfaces at dispatch (correct behavior)
 4. Drizzle `numeric` returns strings — use `Number()` for arithmetic
