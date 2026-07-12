@@ -6,12 +6,12 @@ export const vehicleSelectSchema = createSelectSchema(vehicles);
 
 export const createVehicleSchema = createInsertSchema(vehicles, {
   registrationNumber: z.string().min(2).max(32),
-  maxLoadCapacityKg: z.string().transform((v) => Number(v)).pipe(z.number().positive()),
-  acquisitionCost: z.string().transform((v) => Number(v)).pipe(z.number().positive()),
+  maxLoadCapacityKg: z.coerce.number().positive(),
+  acquisitionCost: z.coerce.number().positive(),
+  odometerKm: z.coerce.number().min(0).optional(),
+  status: z.enum(["available", "on_trip", "in_shop", "retired"]).optional(),
 }).omit({
   id: true,
-  status: true,
-  odometerKm: true,
   createdAt: true,
   updatedAt: true,
 });
