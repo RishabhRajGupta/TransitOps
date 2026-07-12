@@ -1,0 +1,112 @@
+.app-sidebar {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-sidebar);
+  border-right: 1px solid var(--border-color);
+  padding: 24px 16px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  margin-bottom: 30px;
+}
+
+.sidebar-brand-icon {
+  color: var(--primary);
+  filter: drop-shadow(0 0 4px rgba(234, 88, 12, 0.2));
+}
+
+.sidebar-brand-text {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-main);
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all var(--transition-fast);
+}
+
+.sidebar-link:hover {
+  background-color: #f1f5f9;
+  color: var(--text-main);
+}
+
+.sidebar-link.active {
+  background-color: var(--primary-light);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.sidebar-link-icon {
+  flex-shrink: 0;
+}
+
+.sidebar-footer {
+  border-top: 1px solid var(--border-color);
+  padding-top: 16px;
+  margin-top: auto;
+}
+
+.sidebar-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  width: 100%;
+  background: transparent;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 14px;
+  text-align: left;
+  transition: all var(--transition-fast);
+}
+
+.sidebar-logout-btn:hover {
+  background-color: var(--danger-light);
+  color: var(--danger);
+}
+
+@media (max-width: 1024px) {
+  .app-sidebar {
+    padding: 24px 8px;
+  }
+  .sidebar-brand-text, .sidebar-link-text, .sidebar-logout-btn span {
+    display: none;
+  }
+  .sidebar-brand {
+    justify-content: center;
+    padding: 8px 0;
+  }
+  .sidebar-link, .sidebar-logout-btn {
+    justify-content: center;
+    padding: 12px 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-sidebar {
+    display: none; /* Let mobile use header menu toggle if needed, or sidebar vanishes, we simplify for now */
+  }
+}
