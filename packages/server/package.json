@@ -14,28 +14,28 @@
     "db:migrate": "drizzle-kit migrate"
   },
   "dependencies": {
+    "@scalar/nextjs-api-reference": "^0.10.9",
     "@transitops/db": "workspace:*",
     "@transitops/shared": "workspace:*",
+    "bcryptjs": "^3.0.3",
+    "drizzle-orm": "^0.45.2",
+    "jose": "^6.2.3",
     "next": "catalog:",
+    "postgres": "^3.4.7",
+    "rate-limiter-flexible": "^5.0.5",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "drizzle-orm": "^0.45.2",
-    "postgres": "^3.4.7",
-    "jose": "^6.2.3",
-    "bcryptjs": "^3.0.3",
+    "swagger-jsdoc": "^6.3.0",
     "winston": "^3.19.0",
     "winston-daily-rotate-file": "^5.0.0",
-    "rate-limiter-flexible": "^5.0.5",
-    "zod": "catalog:",
-    "swagger-jsdoc": "^6.3.0",
-    "@scalar/nextjs-api-reference": "^0.10.9"
+    "zod": "catalog:"
   },
   "devDependencies": {
-    "typescript": "catalog:",
-    "drizzle-kit": "^0.31.4",
     "@types/bcryptjs": "^3.0.0",
     "@types/swagger-jsdoc": "^6.0.4",
+    "dotenv": "^17.4.2",
+    "drizzle-kit": "^0.31.4",
     "tsx": "^4.19.4",
-    "dotenv": "^17.4.2"
+    "typescript": "catalog:"
   }
 }

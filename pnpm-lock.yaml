@@ -211,7 +211,7 @@ importers:
         specifier: ^4.3.2
         version: 4.3.2
       typescript:
-        specifier: 'catalog:'
+        specifier: ^7.0.2
         version: 7.0.2
 
 packages:

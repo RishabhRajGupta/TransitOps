@@ -5,8 +5,8 @@
   "scripts": {
     "dev:server": "pnpm --filter server dev",
     "dev:web": "pnpm --filter web dev",
-    "dev": "pnpm --filter './packages/{server,web}' --parallel dev",
-    "build": "pnpm --filter './packages/{db,shared}' build && pnpm --filter './packages/{server,web}' build",
+    "dev": "pnpm --filter server --filter web --parallel dev",
+    "build": "pnpm --filter @transitops/db --filter @transitops/shared build && pnpm --filter server --filter web build",
     "lint": "pnpm --filter '*' lint",
     "typecheck": "pnpm --filter '*' exec tsc --noEmit",
     "db:generate": "pnpm --filter server run db:generate",
