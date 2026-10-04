@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>🚛 TransitOps</h1>
+  <h1>🚛 TransitOps - Made for Odoo Hackathon</h1>
   <p><strong>A Next-Generation Fleet & Logistics Management Platform</strong></p>
   <p>
     TransitOps is a comprehensive, real-time command center built for modern logistics operations. 
